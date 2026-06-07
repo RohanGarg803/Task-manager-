@@ -1,0 +1,3563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskZen ✦ AI Cat Companion</title><style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --p1: hsl(265, 60%, 10%);
+    --p2: hsl(265, 55%, 15%);
+    --p3: hsl(265, 50%, 25%);
+    --p4: hsl(263, 90%, 68%); /* electric violet */
+    --p5: hsl(271, 91%, 65%); /* purple */
+    --p6: hsl(285, 94%, 72%); /* violet light */
+    --p7: hsl(265, 80%, 90%);
+    --acc: hsl(315, 95%, 72%); /* pink neon */
+    --acc2: hsl(195, 95%, 68%); /* cyan neon */
+    
+    --bg-dark: hsl(270, 75%, 2.5%);
+    --bg-mesh: radial-gradient(circle at top left, hsl(270, 75%, 4%) 0%, hsl(265, 55%, 6%) 50%, hsl(260, 45%, 9%) 100%);
+    --bg2: rgba(30, 15, 50, 0.45);
+    --bg3: rgba(45, 20, 80, 0.55);
+    
+    --card-bg: rgba(22, 12, 38, 0.45);
+    --card-border: rgba(168, 85, 247, 0.18);
+    --card-glow: rgba(168, 85, 247, 0.05);
+    
+    --text: hsl(265, 100%, 97%);
+    --text2: hsl(265, 40%, 82%);
+    --text3: hsl(265, 25%, 68%);
+    
+    --good: hsl(142, 70%, 55%);
+    --warn: hsl(38, 92%, 58%);
+    --bad: hsl(353, 90%, 62%);
+    
+    --font-h: 'Syne', sans-serif;
+    --font-b: 'Plus Jakarta Sans', sans-serif;
+    --r: 16px;
+    --r2: 24px;
+    
+    --shadow-soft: 0 16px 48px 0 rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 30px rgba(168, 85, 247, 0.15);
+  }
+  
+  html, body {
+    background: var(--bg-dark);
+    font-family: var(--font-b);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Animated Mesh Blobs in Background */
+  .mesh-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(140px);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.14;
+    animation: floatBlob 25s infinite alternate ease-in-out;
+  }
+  .mesh-blob-1 {
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, var(--p4) 0%, transparent 80%);
+    top: -150px;
+    left: -150px;
+  }
+  .mesh-blob-2 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--acc) 0%, transparent 80%);
+    bottom: -150px;
+    right: -150px;
+    animation-delay: -7s;
+  }
+  @keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(120px, 90px) scale(1.2); }
+  }
+  
+  .app {
+    width: 100%;
+    max-width: 1240px;
+    background: var(--bg-mesh);
+    min-height: 820px;
+    border-radius: var(--r2);
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    position: relative;
+    box-shadow: var(--shadow-soft), var(--shadow-glow);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+  
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 40px;
+    border-bottom: 1px solid var(--card-border);
+    background: rgba(13, 5, 20, 0.4);
+    backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 10;
+  }
+  
+  .logo {
+    font-family: var(--font-h);
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text);
+  }
+  
+  .logo span {
+    color: var(--p5);
+    background: linear-gradient(135deg, var(--p5), var(--acc));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .logo-icon {
+    font-size: 34px;
+    animation: float 4s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  
+  .stats-bar {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  
+  .stat-pill {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    background: rgba(30, 15, 50, 0.4);
+    border: 1px solid rgba(124, 58, 237, 0.18);
+    padding: 8px 18px;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .stat-pill:hover {
+    border-color: var(--p5);
+    transform: translateY(-2px);
+    background: rgba(30, 15, 50, 0.6);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+  }
+  
+  .stat-pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.5; }
+  }
+  
+  .main-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    flex: 1;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .left-panel {
+    padding: 40px;
+    border-right: 1px solid var(--card-border);
+    overflow-y: auto;
+    max-height: calc(820px - 85px);
+  }
+  
+  .right-panel {
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-y: auto;
+    background: rgba(10, 4, 18, 0.15);
+    max-height: calc(820px - 85px);
+  }
+
+  /* Spacious Dashboard Header */
+  .dashboard-header {
+    margin-bottom: 28px;
+  }
+  .dashboard-header h1 {
+    font-family: var(--font-h);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .dashboard-header h1 span {
+    background: linear-gradient(135deg, var(--p6), var(--acc));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .dashboard-header .subtitle {
+    font-size: 14px;
+    color: var(--text3);
+    font-weight: 500;
+  }
+  
+  .section-label {
+    font-family: var(--font-h);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin: 28px 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--card-border), transparent);
+  }
+
+  /* ===== SPOTLIGHT-STYLE COMMAND TASK CONSOLE ===== */
+  .command-bar-container {
+    background: rgba(30, 15, 50, 0.35);
+    border: 1px solid var(--card-border);
+    border-radius: var(--r);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 24px;
+  }
+  .command-bar-container:focus-within {
+    border-color: var(--p5);
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25), 0 8px 30px rgba(0, 0, 0, 0.25);
+    background: rgba(30, 15, 50, 0.55);
+  }
+  .command-bar-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+  }
+  .command-bar-input-row input[type="text"] {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: var(--font-b);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .command-bar-input-row input::placeholder {
+    color: var(--text3);
+    opacity: 0.65;
+  }
+  .command-options {
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    border-top: 1px solid transparent;
+  }
+  .command-bar-container:focus-within .command-options,
+  .command-bar-container.has-content .command-options {
+    height: 58px;
+    opacity: 1;
+    padding: 10px 12px 6px;
+    border-top-color: rgba(168, 85, 247, 0.12);
+  }
+  .command-left-tools {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  /* Priority Select Pill Buttons */
+  .priority-chips {
+    display: flex;
+    gap: 6px;
+  }
+  .priority-chip {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .priority-chip.active.low { background: rgba(52, 211, 153, 0.15); border-color: var(--good); color: var(--good); }
+  .priority-chip.active.med { background: rgba(251, 191, 36, 0.15); border-color: var(--warn); color: var(--warn); }
+  .priority-chip.active.high { background: rgba(253, 92, 99, 0.15); border-color: var(--bad); color: var(--bad); }
+
+  .command-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 5px 12px;
+    border-radius: 100px;
+  }
+  .command-date input[type="date"] {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text2);
+    font-family: var(--font-b);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .command-date input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) hue-rotate(250deg);
+    opacity: 0.65;
+    cursor: pointer;
+  }
+
+  /* ===== SLIDING FILTER TAGS STRIP ===== */
+  .filter-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    background: rgba(30, 15, 50, 0.3);
+    border: 1px solid var(--card-border);
+    padding: 5px;
+    border-radius: 100px;
+    position: relative;
+    width: fit-content;
+    z-index: 5;
+  }
+  .filter-btn {
+    font-family: var(--font-b);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 2;
+  }
+  .filter-btn.active {
+    color: white;
+  }
+  /* The sliding pill bg */
+  .sliding-filter-pill {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    background: linear-gradient(135deg, var(--p4), var(--p5));
+    border-radius: 100px;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+    z-index: 1;
+    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  /* ===== PERSPECTIVE 3D FLOATING CARDS ===== */
+  .task-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--r2);
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: border-color 0.3s, background 0.3s, transform 0.1s ease-out, box-shadow 0.1s ease-out;
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    animation: fadeInUp 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  
+  .task-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    border-radius: 5px 0 0 5px;
+  }
+  
+  .task-card.p-high::before { background: var(--bad); }
+  .task-card.p-med::before { background: var(--warn); }
+  .task-card.p-low::before { background: var(--good); }
+  
+  .task-card:hover {
+    border-color: rgba(168, 85, 247, 0.45);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), 0 0 15px rgba(168, 85, 247, 0.08);
+  }
+  
+  .task-card.done {
+    opacity: 0.5;
+    background: rgba(15, 8, 25, 0.25);
+  }
+  
+  .task-card.done .task-text {
+    text-decoration: line-through;
+    color: var(--text3);
+  }
+  
+  .task-card.deleting {
+    animation: slideOutRight 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+  }
+  
+  /* Checkbox with glowing halo */
+  .task-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--card-border);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s;
+    position: relative;
+  }
+  .task-check::after {
+    content: '';
+    position: absolute;
+    top: -4px; left: -4px; right: -4px; bottom: -4px;
+    border-radius: 50%;
+    border: 1px solid var(--p5);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s;
+  }
+  .task-check:hover {
+    border-color: var(--p5);
+    transform: scale(1.1);
+  }
+  .task-check:hover::after {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  
+  .task-card.done .task-check {
+    background: linear-gradient(135deg, var(--p4), var(--acc));
+    border-color: transparent;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+  }
+  
+  .check-icon {
+    display: none;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+  }
+  
+  .task-card.done .check-icon {
+    display: block;
+  }
+  
+  .check-empty {
+    display: block;
+  }
+  
+  .task-card.done .check-empty {
+    display: none;
+  }
+  
+  .task-body {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .task-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .task-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .priority-badge {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  
+  .pb-high { background: rgba(253, 92, 99, 0.12); color: var(--bad); }
+  .pb-med { background: rgba(251, 191, 36, 0.12); color: var(--warn); }
+  .pb-low { background: rgba(52, 211, 153, 0.12); color: var(--good); }
+  
+  .task-time {
+    font-size: 11px;
+    color: var(--text3);
+  }
+  
+  .task-deadline {
+    font-size: 11px;
+    color: var(--p6);
+    font-weight: 600;
+  }
+  
+  .task-del {
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 6px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.25s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .task-card:hover .task-del {
+    opacity: 0.8;
+  }
+  
+  .task-del:hover {
+    color: var(--bad);
+    background: rgba(253, 92, 99, 0.15);
+    transform: scale(1.15) rotate(90deg);
+    opacity: 1 !important;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 56px 20px;
+    color: var(--text3);
+    font-size: 15px;
+  }
+  
+  .empty-state .big {
+    font-size: 48px;
+    margin-bottom: 16px;
+    animation: float 4s ease-in-out infinite;
+  }
+  
+  /* ===== futuristic holographic Mochi Capsule ===== */
+  .bot-card {
+    background: radial-gradient(circle at center, rgba(30, 15, 50, 0.2) 0%, rgba(10, 4, 18, 0.5) 100%);
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: var(--r2);
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3), inset 0 0 24px rgba(124, 58, 237, 0.15);
+    flex-shrink: 0;
+  }
+  .bot-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.45;
+  }
+  
+  .bot-card:hover {
+    border-color: var(--p5);
+    box-shadow: 0 12px 40px rgba(168, 85, 247, 0.25), inset 0 0 30px rgba(168, 85, 247, 0.2);
+  }
+  
+  .cat-container {
+    position: relative;
+    display: inline-block;
+    margin: 0 auto 12px;
+  }
+  
+  #cat-canvas {
+    display: block;
+    cursor: grab;
+    border-radius: 16px;
+    background: transparent;
+    position: relative;
+    z-index: 2;
+  }
+  
+  #cat-canvas:active {
+    cursor: grabbing;
+  }
+  
+  .cat-platform {
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 14px;
+    background: linear-gradient(180deg, rgba(168, 85, 247, 0.6), rgba(124, 58, 237, 0.1));
+    border-radius: 50%;
+    filter: blur(1px);
+    z-index: 1;
+    box-shadow: 0 0 20px var(--p4);
+    transition: all 0.3s;
+  }
+  
+  .cat-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+    transition: all 0.5s ease;
+    z-index: 0;
+  }
+  
+  .cat-glow.happy { opacity: 1; background: radial-gradient(circle, rgba(240, 171, 252, 0.25) 0%, transparent 70%); }
+  .cat-glow.sad { opacity: 0.25; background: radial-gradient(circle, rgba(147, 197, 253, 0.12) 0%, transparent 70%); }
+  .cat-glow.anxious { opacity: 0.65; background: radial-gradient(circle, rgba(248, 113, 113, 0.22) 0%, transparent 70%); }
+  .cat-glow.sleeping { opacity: 0.4; background: radial-gradient(circle, rgba(124, 58, 237, 0.18) 0%, transparent 70%); }
+  
+  .cat-mood-indicator {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 22px;
+    transition: all 0.3s;
+    animation: float 3s ease-in-out infinite;
+    z-index: 5;
+    background: rgba(30, 15, 50, 0.6);
+    padding: 6px;
+    border-radius: 50%;
+    border: 1px solid var(--card-border);
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .cat-accessory {
+    position: absolute;
+    bottom: 34px;
+    right: 22px;
+    font-size: 20px;
+    pointer-events: none;
+    animation: float 2.5s ease-in-out infinite;
+    z-index: 5;
+  }
+  
+  .bot-name {
+    font-family: var(--font-h);
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+  
+  .bot-status {
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 14px;
+    min-height: 36px;
+    line-height: 1.5;
+    padding: 0 10px;
+  }
+  
+  .cat-hint {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 6px;
+    opacity: 0.75;
+    font-weight: 500;
+  }
+  
+  .cat-hint span {
+    margin: 0 6px;
+    color: var(--text2);
+  }
+  
+  .mood-bar-wrap {
+    margin-bottom: 16px;
+  }
+  
+  .mood-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .mood-track {
+    height: 8px;
+    background: var(--bg-dark);
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .mood-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, var(--p4), var(--acc));
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  /* ===== CHAT PANEL ===== */
+  .bot-chat-area {
+    background: rgba(10, 4, 18, 0.55);
+    border: 1px solid var(--card-border);
+    border-radius: var(--r);
+    padding: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    backdrop-filter: blur(4px);
+  }
+  
+  .chat-bubble {
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 16px;
+    max-width: 88%;
+    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(0.8) translateY(12px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  
+  .chat-bubble.bot {
+    background: rgba(30, 15, 50, 0.65);
+    color: var(--text2);
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    align-self: flex-start;
+  }
+  
+  .chat-bubble.user {
+    background: linear-gradient(135deg, var(--p4), var(--p5));
+    color: white;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+  }
+  
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .chat-input {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--card-border);
+    border-radius: var(--r);
+    padding: 10px 16px;
+    color: var(--text);
+    font-family: var(--font-b);
+    font-size: 13px;
+    outline: none;
+    transition: all 0.3s;
+  }
+  
+  .chat-input:focus {
+    border-color: var(--p5);
+    background: rgba(55, 25, 95, 0.65);
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+  }
+  
+  .chat-input::placeholder {
+    color: var(--text3);
+    opacity: 0.6;
+  }
+  
+  .chat-send {
+    background: linear-gradient(135deg, var(--p4), var(--acc));
+    border: none;
+    border-radius: var(--r);
+    padding: 10px 16px;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 10px rgba(168, 85, 247, 0.25);
+  }
+  
+  .chat-send:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(232, 121, 249, 0.35);
+  }
+  
+  .chat-send:active {
+    transform: translateY(0);
+  }
+
+  /* Stats grid container on right panel */
+  .stats-grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  
+  /* ===== PRODUCTIVITY CIRCLE GAUGE ===== */
+  .productivity-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--r2);
+    padding: 16px;
+    text-align: center;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .productivity-label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  
+  .productivity-gauge-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 6px auto;
+  }
+  
+  .productivity-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+  
+  .gauge-bg {
+    fill: none;
+    stroke: rgba(124, 58, 237, 0.08);
+    stroke-width: 8;
+  }
+  
+  .gauge-fill {
+    fill: none;
+    stroke: url(#prodGrad);
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 251.2;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .productivity-score {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-h);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--acc);
+    text-shadow: 0 0 10px rgba(232, 121, 249, 0.3);
+  }
+
+  /* ===== GLOWING TASK STREAK WIDGET ===== */
+  .streak-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--r2);
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .streak-label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .streak-flame-container {
+    margin: 4px 0;
+    position: relative;
+  }
+  .streak-flame {
+    font-size: 28px;
+    animation: flamePulse 1.5s infinite alternate ease-in-out;
+  }
+  @keyframes flamePulse {
+    0% { transform: scale(1) rotate(-2deg); filter: drop-shadow(0 0 4px #f97316); }
+    50% { transform: scale(1.18) rotate(2deg); filter: drop-shadow(0 0 14px #ef4444); }
+    100% { transform: scale(1) rotate(-1deg); filter: drop-shadow(0 0 4px #f97316); }
+  }
+  .streak-number {
+    font-family: var(--font-h);
+    font-size: 22px;
+    font-weight: 800;
+    color: #fdba74;
+    text-shadow: 0 0 8px rgba(249, 115, 22, 0.4);
+  }
+  
+  /* ===== REMINDER CARD ===== */
+  .reminder-card {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(232, 121, 249, 0.06));
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: var(--r2);
+    padding: 20px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+  }
+  
+  .reminder-card:hover {
+    border-color: var(--p5);
+    box-shadow: 0 6px 22px rgba(168, 85, 247, 0.12);
+  }
+  
+  .reminder-time {
+    font-family: var(--font-h);
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--p6);
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 15px rgba(192, 132, 252, 0.2);
+    margin-bottom: 2px;
+  }
+  
+  .reminder-date {
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  
+  .reminder-label {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+  }
+  
+  .reminder-set {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .reminder-input {
+    background: var(--bg-dark);
+    border: 1px solid var(--card-border);
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: var(--font-b);
+    font-size: 13px;
+    border-radius: var(--r);
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .reminder-input::-webkit-calendar-picker-indicator {
+    filter: invert(1) hue-rotate(250deg);
+    opacity: 0.7;
+    cursor: pointer;
+  }
+  
+  .reminder-input:focus {
+    border-color: var(--p5);
+  }
+  
+  .btn-remind {
+    background: linear-gradient(135deg, var(--p4), var(--p5));
+    border: none;
+    border-radius: var(--r);
+    padding: 10px 18px;
+    color: white;
+    font-size: 13px;
+    font-family: var(--font-h);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+  }
+  
+  .btn-remind:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(168, 85, 247, 0.35);
+  }
+  
+  .reminder-countdown {
+    font-size: 12px;
+    color: var(--text3);
+    font-weight: 500;
+    margin-top: 12px;
+    text-align: center;
+    min-height: 18px;
+  }
+  
+  /* ===== NOTIFICATIONS & MODALS ===== */
+  .notif {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    background: rgba(26, 10, 46, 0.85);
+    border: 1px solid var(--p5);
+    border-radius: var(--r2);
+    padding: 16px 20px;
+    max-width: 320px;
+    font-size: 13px;
+    color: var(--text);
+    transform: translateX(380px);
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.2);
+    backdrop-filter: blur(12px);
+  }
+  
+  .notif.show {
+    transform: translateX(0);
+  }
+  
+  .notif-title {
+    font-family: var(--font-h);
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 6px;
+    color: var(--acc);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .loading-dots {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    margin-left: 6px;
+  }
+  
+  .loading-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--acc);
+    animation: blink 1.2s infinite;
+  }
+  
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  
+  @keyframes blink {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1.2); }
+  }
+  
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(168, 85, 247, 0.3);
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(168, 85, 247, 0.6);
+  }
+  
+  .save-indicator {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--acc);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 100;
+    background: rgba(30, 15, 50, 0.85);
+    padding: 6px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+  
+  .save-indicator.show {
+    opacity: 1;
+  }
+  
+  .motivation-popup {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9998;
+    background: rgba(26, 10, 46, 0.85);
+    border: 1px solid var(--p5);
+    border-radius: var(--r2);
+    padding: 16px 20px;
+    max-width: 280px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+    transform: translateY(40px);
+    opacity: 0;
+    transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(12px);
+  }
+  
+  .motivation-popup.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  .motivation-popup .m-title {
+    font-family: var(--font-h);
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--p6);
+    margin-bottom: 6px;
+  }
+  
+  .motivation-popup .m-text {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  
+  .m-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.2s;
+  }
+  
+  .m-close:hover {
+    color: var(--bad);
+  }
+  
+  .countdown-urgent { color: var(--bad) !important; font-weight: 800 !important; animation: pulse 1s infinite; }
+  .countdown-soon { color: var(--warn) !important; font-weight: 700 !important; }
+  .countdown-ok { color: var(--good) !important; }
+  
+  .task-countdown {
+    font-size: 11px;
+    color: var(--text3);
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+  
+  /* Confetti Keyframes */
+  .html-confetti {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    border-radius: 2px;
+    animation: fall var(--fall-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94) var(--fall-delay) forwards;
+  }
+  
+  @keyframes fall {
+    0% {
+      top: -20px;
+      opacity: 1;
+      transform: translateY(0) rotate(0deg) translateX(0);
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+      transform: translateY(800px) rotate(720deg) translateX(var(--drift));
+    }
+  }
+</style>
+</head>
+<body>
+<!-- Animated Background Mesh Blobs -->
+<div class="mesh-blob mesh-blob-1"></div>
+<div class="mesh-blob mesh-blob-2"></div>
+
+<div class="app" id="app">
+  <div class="save-indicator" id="save-indicator">💾 Auto-saved</div>
+  <div class="topbar">
+    <div class="logo"><span class="logo-icon">🐱</span>task<span>zen</span> ✦</div>
+    <div class="stats-bar">
+      <div class="stat-pill"><span class="dot" style="background:var(--bad)"></span><span id="s-high">0</span> urgent</div>
+      <div class="stat-pill"><span class="dot" style="background:var(--warn)"></span><span id="s-med">0</span> medium</div>
+      <div class="stat-pill"><span class="dot" style="background:var(--good)"></span><span id="s-done">0</span> done</div>
+    </div>
+  </div>
+  <div class="main-layout">
+    <div class="left-panel">
+      <!-- Spacious Dashboard Header -->
+      <div class="dashboard-header">
+        <h1 id="greeting-title">Hello, <span>Productive Day!</span></h1>
+        <div class="subtitle" id="greeting-subtitle">Let's check off some goals.</div>
+      </div>
+
+      <!-- Spotlight-style Task Input Console -->
+      <div class="command-bar-container" id="command-bar-container">
+        <div class="command-bar-input-row">
+          <input id="task-input" type="text" placeholder="What needs to be done? Press Enter to add..." />
+        </div>
+        <div class="command-options">
+          <div class="command-left-tools">
+            <div class="priority-chips">
+              <span class="priority-chip high" onclick="selectPriorityChip('high', this)">Urgent</span>
+              <span class="priority-chip med active" onclick="selectPriorityChip('med', this)">Medium</span>
+              <span class="priority-chip low" onclick="selectPriorityChip('low', this)">Low</span>
+            </div>
+            <div class="command-date">
+              <input type="date" id="deadline-input" class="deadline-input" />
+            </div>
+          </div>
+          <button class="btn-remind" onclick="addTask()" style="padding: 6px 14px; font-size: 11px;">+ Add Task</button>
+        </div>
+      </div>
+
+      <!-- Sliding filter tags strip -->
+      <div class="filter-row" id="filter-row">
+        <div class="sliding-filter-pill" id="sliding-pill"></div>
+        <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('high',this)">Urgent</button>
+        <button class="filter-btn" onclick="setFilter('med',this)">Medium</button>
+        <button class="filter-btn" onclick="setFilter('low',this)">Low</button>
+        <button class="filter-btn" onclick="setFilter('done',this)">Done ✓</button>
+        <button class="filter-btn" onclick="setFilter('overdue',this)">Overdue ⚠</button>
+      </div>
+
+      <div class="section-label">Tasks</div>
+      <div class="task-list" id="task-list"></div>
+    </div>
+    <div class="right-panel">
+      <div class="bot-card">
+        <div class="cat-mood-indicator" id="cat-mood-emoji">😊</div>
+        <div class="cat-accessory" id="cat-accessory">✨</div>
+        <div class="cat-container">
+          <div class="cat-glow" id="cat-glow"></div>
+          <canvas id="cat-canvas" width="240" height="200"></canvas>
+          <div class="cat-platform" id="cat-platform"></div>
+        </div>
+        <div class="bot-status" id="bot-status">Meow! Ready to help you conquer today!</div>
+        <div class="cat-hint">
+          <span>🖱️ Click</span>·<span>🖱️🖱️ Double-click</span>·<span>↔️ Drag</span>
+        </div>
+        <div class="mood-bar-wrap">
+          <div class="mood-label"><span>happiness</span><span id="mood-pct">60%</span></div>
+          <div class="mood-track"><div class="mood-fill" id="mood-fill" style="width:60%"></div></div>
+        </div>
+      </div>
+      <div class="stats-grid-container">
+        <div class="productivity-card">
+          <div class="productivity-label">Completed</div>
+          <div class="productivity-gauge-container">
+            <svg class="productivity-svg" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="prodGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="var(--p4)" />
+                  <stop offset="100%" stop-color="var(--acc)" />
+                </linearGradient>
+              </defs>
+              <circle class="gauge-bg" cx="50" cy="50" r="40" />
+              <circle class="gauge-fill" id="prod-gauge-fill" cx="50" cy="50" r="40" />
+            </svg>
+            <div class="productivity-score" id="prod-score">0</div>
+          </div>
+        </div>
+        <div class="streak-card">
+          <div class="streak-label">Streak</div>
+          <div class="streak-flame-container">
+            <span class="streak-flame">🔥</span>
+          </div>
+          <div class="streak-number" id="streak-count">0</div>
+        </div>
+      </div>
+      <div class="reminder-card">
+        <div class="reminder-time" id="clock">00:00 AM</div>
+        <div class="reminder-date" id="clock-date" style="font-size:13px;color:var(--text2);margin-bottom:4px;font-weight:500;">Loading...</div>
+        <div class="reminder-label">Set Reminder</div>
+        <div class="reminder-set" style="display:flex;flex-direction:column;gap:8px;">
+          <input class="reminder-input" type="datetime-local" id="remind-datetime" style="background:var(--bg);border:1px solid var(--border2);padding:10px 12px;color:var(--text);font-family:var(--font-b);font-size:13px;border-radius:var(--r);outline:none;cursor:pointer;" />
+          <button class="btn-remind" onclick="setReminder()" style="width:100%;">Set Reminder</button>
+        </div>
+        <div class="reminder-countdown" id="reminder-countdown" style="font-size:12px;color:var(--p6);font-weight:600;margin-top:8px;text-align:center;min-height:18px;">⏳ Pick a date & time above</div>
+      </div>
+    </div>
+  </div>
+  <div class="notif" id="notif">
+    <div class="notif-title" id="notif-title">Reminder</div>
+    <div id="notif-body"></div>
+  </div>
+  <div class="motivation-popup" id="motivation-popup">
+    <button class="m-close" onclick="closeMotivation()">×</button>
+    <div class="m-title" id="m-title">🌟 Motivation</div>
+    <div class="m-text" id="m-text">Keep going!</div>
+  </div>
+</div>
+
+<script>
+window.onerror = function(msg, url, line, col, error) {
+  alert("TaskZen Script Error: " + msg + "\nLine: " + line + ":" + col + "\nStack: " + (error ? error.stack : ""));
+};
+
+(function(){
+
+  const canvas = document.getElementById('cat-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  let moodPct = 60;
+  let tasks = [];
+  let filter = 'all';
+  let reminderTime = '20:00';
+  let reminderFired = false;
+  let selectedPriority = 'med';
+  let streakCount = 0;
+  let lastCompletionDate = null;
+  let petT = 0;
+  let catAnim = 0;
+  let tailSwing = 0;
+  let earWiggle = 0;
+  let blinkT = 0;
+  let blinkState = 0;
+  let purring = false;
+  let purrT = 0;
+  let isDragging = false, lastMouseX = 0;
+  let catRotY = 0, catRotTarget = 0;
+  let bounceY = 0, bounceV = 0;
+  let particles = [];
+  let sadTears = [];
+  let currentMoodState = 'content';
+  let catScale = 1;
+  let catScaleTarget = 1;
+  let whiskerTwitch = 0;
+  let floatingHearts = [];
+  let stars = [];
+  let breathing = 0;
+  let consecutiveDone = 0;
+  let lastMotivationTime = 0;
+  let chatHistory = [];
+  let tailAngle = 0;
+  let headTilt = 0;
+  let pawLift = 0;
+  let eyeSize = 1;
+  let glowPulse = 0;
+  let accessoryFloat = 0;
+
+  // Interactive sleeping / idle variables
+  let lastUserInteractionTime = Date.now();
+  let isSleeping = false;
+  let zzzs = [];
+
+  // ===== AUDIO SYNTHESIZER (Web Audio API) =====
+  let audioCtx = null;
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  function playSynthSound(type) {
+    try {
+      initAudio();
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const osc = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'click') {
+        // Subtle clean click pop
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(10, now + 0.08);
+        gainNode.gain.setValueAtTime(0.08, now);
+        gainNode.gain.linearRampToValueAtTime(0.001, now + 0.08);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      } 
+      else if (type === 'meow') {
+        // Cute cat chirp/meow frequency sweep
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.quadraticRampToValueAtTime(950, now + 0.1);
+        osc.frequency.quadraticRampToValueAtTime(800, now + 0.22);
+        
+        gainNode.gain.setValueAtTime(0.0, now);
+        gainNode.gain.linearRampToValueAtTime(0.08, now + 0.04);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        
+        osc.start(now);
+        osc.stop(now + 0.22);
+      } 
+      else if (type === 'success') {
+        // Delightful retro 8-bit major arpeggio chime (C5 -> E5 -> G5 -> C6)
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const oscNote = audioCtx.createOscillator();
+          const gainNote = audioCtx.createGain();
+          oscNote.connect(gainNote);
+          gainNote.connect(audioCtx.destination);
+          
+          oscNote.type = 'sine';
+          oscNote.frequency.setValueAtTime(freq, now + idx * 0.07);
+          
+          gainNote.gain.setValueAtTime(0.0, now);
+          gainNote.gain.linearRampToValueAtTime(0.05, now + idx * 0.07 + 0.02);
+          gainNote.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.22);
+          
+          oscNote.start(now + idx * 0.07);
+          oscNote.stop(now + idx * 0.07 + 0.22);
+        });
+      } 
+      else if (type === 'alert') {
+        // Soft double-pulse electronic synth
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.setValueAtTime(880, now + 0.15);
+        
+        gainNode.gain.setValueAtTime(0.05, now);
+        gainNode.gain.linearRampToValueAtTime(0.001, now + 0.12);
+        
+        gainNode.gain.setValueAtTime(0.05, now + 0.15);
+        gainNode.gain.linearRampToValueAtTime(0.001, now + 0.27);
+        
+        osc.start(now);
+        osc.stop(now + 0.3);
+      }
+    } catch (e) {
+      console.log('Audio Context block or error:', e);
+    }
+  }
+
+  function updateActivity() {
+    lastUserInteractionTime = Date.now();
+    if (isSleeping) {
+      isSleeping = false;
+      addChatBubble('bot', '*yawns and stretches* Meow! You woke me up! Let\'s do this! 🐾');
+      playSynthSound('meow');
+      updateBot();
+    }
+  }
+  window.addEventListener('mousemove', updateActivity);
+  window.addEventListener('keydown', updateActivity);
+  canvas.addEventListener('mousedown', updateActivity);
+
+  // ===== LOCALSTORAGE SAVE/LOAD =====
+  function loadData(){
+    try{
+      const saved = localStorage.getItem('taskzen_data');
+      if(saved){
+        const data = JSON.parse(saved);
+        tasks = data.tasks || [];
+        reminderTime = data.reminderTime || '20:00';
+        if(data.reminderDateTime){
+          reminderDateTime = new Date(data.reminderDateTime);
+          // Format for datetime-local input: YYYY-MM-DDTHH:MM
+          const d = reminderDateTime;
+          const isoStr = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+          document.getElementById('remind-datetime').value = isoStr;
+        }
+        moodPct = data.moodPct || 60;
+        chatHistory = data.chatHistory || [];
+        streakCount = data.streakCount || 0;
+        lastCompletionDate = data.lastCompletionDate || null;
+      }
+    }catch(e){ console.log('No saved data'); }
+  }
+  loadData();
+
+  function saveData(){
+    try{
+      localStorage.setItem('taskzen_data', JSON.stringify({
+        tasks: tasks,
+        reminderTime: reminderTime,
+        reminderDateTime: reminderDateTime ? reminderDateTime.toISOString() : null,
+        moodPct: moodPct,
+        chatHistory: chatHistory,
+        streakCount: streakCount,
+        lastCompletionDate: lastCompletionDate,
+        lastSave: new Date().toISOString()
+      }));
+      showSaveIndicator();
+    }catch(e){ console.log('Save failed'); }
+  }
+
+  // ===== STREAK & GREETING & CHIP UTILITIES =====
+  function getLocalDateString(date) {
+    const d = date || new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function updateStreakUI() {
+    const el = document.getElementById('streak-count');
+    const flame = document.querySelector('.streak-flame');
+    if (el) {
+      el.textContent = streakCount;
+    }
+    if (flame) {
+      if (streakCount > 0) {
+        flame.style.filter = '';
+        flame.style.animationPlayState = 'running';
+        flame.style.opacity = '1';
+      } else {
+        flame.style.filter = 'grayscale(1) opacity(0.3)';
+        flame.style.animationPlayState = 'paused';
+      }
+    }
+  }
+
+  function checkAndUpdateStreakLoad() {
+    if (!lastCompletionDate) {
+      streakCount = 0;
+      updateStreakUI();
+      return;
+    }
+    const todayStr = getLocalDateString();
+    if (lastCompletionDate === todayStr) {
+      updateStreakUI();
+      return;
+    }
+    const lastDate = new Date(lastCompletionDate + 'T00:00:00');
+    const todayDate = new Date(todayStr + 'T00:00:00');
+    const diffTime = Math.abs(todayDate - lastDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays > 1) {
+      streakCount = 0;
+    }
+    updateStreakUI();
+  }
+
+  function incrementStreak() {
+    const todayStr = getLocalDateString();
+    if (!lastCompletionDate) {
+      streakCount = 1;
+    } else if (lastCompletionDate === todayStr) {
+      return;
+    } else {
+      const lastDate = new Date(lastCompletionDate + 'T00:00:00');
+      const todayDate = new Date(todayStr + 'T00:00:00');
+      const diffTime = Math.abs(todayDate - lastDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) {
+        streakCount++;
+        if (streakCount === 3 || streakCount === 5 || streakCount % 10 === 0) {
+          triggerStreakMilestone(streakCount);
+        }
+      } else {
+        streakCount = 1;
+      }
+    }
+    lastCompletionDate = todayStr;
+    updateStreakUI();
+    saveData();
+  }
+
+  function triggerStreakMilestone(count) {
+    playSynthSound('success');
+    spawnParticles(20, '#f0abfc');
+    spawnFloatingHearts(8);
+    spawnStars(8);
+    const msgs = [
+      `🐾 Nya~! Incredible! You've reached a ${count}-day streak! 🌟`,
+      `🔥 Purrrr~! A ${count}-day streak! You are on fire, hooman!`,
+      `⭐ Magnificent! ${count} days of consistency! Mochi is so proud! 😻`
+    ];
+    const msg = msgs[Math.floor(Math.random() * msgs.length)];
+    addChatBubble('bot', msg);
+    showMotivation('🔥 Streak Milestone!', msg);
+  }
+
+  function updateGreeting() {
+    const titleEl = document.getElementById('greeting-title');
+    if (titleEl) {
+      const tod = getTimeOfDay();
+      let greet = 'Good morning, <span>hooman!</span>';
+      if (tod === 'midday') greet = 'Good day, <span>hooman!</span>';
+      if (tod === 'afternoon') greet = 'Good afternoon, <span>hooman!</span>';
+      if (tod === 'evening') greet = 'Good evening, <span>hooman!</span>';
+      titleEl.innerHTML = greet;
+    }
+  }
+
+  window.selectPriorityChip = function(pri, element) {
+    selectedPriority = pri;
+    document.querySelectorAll('.priority-chip').forEach(chip => {
+      chip.classList.remove('active');
+    });
+    element.classList.add('active');
+    playSynthSound('click');
+  };
+
+  function showSaveIndicator(){
+    const ind = document.getElementById('save-indicator');
+    ind.classList.add('show');
+    setTimeout(() => ind.classList.remove('show'), 1500);
+  }
+
+  // ===== MOTIVATIONAL CONTENT =====
+  const quotes = [
+    "The secret of getting ahead is getting started. - Mark Twain",
+    "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
+    "Start where you are. Use what you have. Do what you can. - Arthur Ashe",
+    "Your future is created by what you do today, not tomorrow. - Robert Kiyosaki",
+    "Small progress is still progress! 🌟",
+    "You are doing amazing! Keep that momentum! ✨",
+    "Every task completed is a step toward your goals! 🎯",
+    "Believe you can and you are halfway there. - Theodore Roosevelt",
+    "The only way to do great work is to love what you do. - Steve Jobs",
+    "Success is the sum of small efforts repeated day in and day out. - Robert Collier",
+    "You are not just completing tasks, you are building a better future! 🚀",
+    "One task at a time, one day at a time. You have got this! 💪",
+    "Progress, not perfection. Every step counts! 🐾",
+    "Your dedication today creates your success tomorrow! ⭐",
+    "Champions keep playing until they get it right. - Billie Jean King"
+  ];
+
+  const timeBasedMessages = {
+    morning: [
+      "Good morning! ☀️ Let's make today pawsome!",
+      "Rise and shine! Mochi believes in you! 🌅",
+      "New day, new opportunities! Let's crush it! 💪",
+      "The morning is yours! Start with your most important task! 🎯"
+    ],
+    midday: [
+      "Halfway through the day! You are doing great! 🌟",
+      "Keep that momentum going! Mochi is proud! 😺",
+      "Lunch break soon? Don't forget to hydrate! 💧",
+      "You are making real progress! Keep it up! 🚀"
+    ],
+    afternoon: [
+      "Afternoon energy! Let's finish strong! ⚡",
+      "Almost there! Push through the afternoon slump! 💪",
+      "Mochi sees your hard work! You are amazing! ⭐",
+      "Stay focused! The finish line is in sight! 🏁"
+    ],
+    evening: [
+      "Great work today! Time to wind down! 🌙",
+      "You did your best today! Be proud! 🌟",
+      "Tomorrow is a new day! Rest well! 😴",
+      "Mochi gives you a gold star for today! ⭐"
+    ]
+  };
+
+  function getTimeOfDay(){
+    const hour = new Date().getHours();
+    if(hour < 12) return 'morning';
+    if(hour < 17) return 'midday';
+    if(hour < 20) return 'afternoon';
+    return 'evening';
+  }
+
+  function showMotivation(title, text){
+    const popup = document.getElementById('motivation-popup');
+    document.getElementById('m-title').textContent = title;
+    document.getElementById('m-text').textContent = text;
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 8000);
+  }
+
+  window.closeMotivation = function(){
+    document.getElementById('motivation-popup').classList.remove('show');
+  };
+
+  // ===== SMART REMINDERS =====
+  function sendSmartReminder(){
+    const now = new Date();
+    const hour = now.getHours();
+    const pending = tasks.filter(t => !t.done);
+    const done = tasks.filter(t => t.done).length;
+    const total = tasks.length;
+
+    if(total === 0) return;
+
+    if(hour === 9 && !reminderFired){
+      const msg = timeBasedMessages.morning[Math.floor(Math.random()*timeBasedMessages.morning.length)];
+      showNotif('🌅 Good Morning!', msg);
+      addChatBubble('bot', msg);
+      return;
+    }
+
+    if(hour === 13 && pending.length > 0){
+      const msg = 'You have '+pending.length+' tasks left! '+timeBasedMessages.midday[Math.floor(Math.random()*timeBasedMessages.midday.length)];
+      showNotif('⏰ Midday Check-in', msg);
+      addChatBubble('bot', msg);
+      return;
+    }
+
+    if(hour === 16 && pending.length > 0){
+      const msg = timeBasedMessages.afternoon[Math.floor(Math.random()*timeBasedMessages.afternoon.length)];
+      showNotif('⚡ Afternoon Push!', msg);
+      addChatBubble('bot', msg);
+      return;
+    }
+
+    if(done > 0 && done % 3 === 0 && done !== lastMotivationTime){
+      lastMotivationTime = done;
+      const quote = quotes[Math.floor(Math.random()*quotes.length)];
+      showMotivation('🎉 Milestone!', quote);
+      addChatBubble('bot', '*excited purr* '+quote);
+      spawnParticles(10, '#f0abfc');
+      return;
+    }
+
+    if(consecutiveDone >= 3){
+      const msgs = [
+        "🔥 Streak alert! You are on fire!",
+        "🌟 Consistency is key! You are building great habits!",
+        "⭐ Look at you go! Task after task!",
+        "🎯 Focus mode activated! You are unstoppable!"
+      ];
+      const msg = msgs[Math.floor(Math.random()*msgs.length)];
+      showMotivation('🔥 Streak!', msg);
+      addChatBubble('bot', '*does victory dance* '+msg);
+      spawnParticles(15, '#f0abfc');
+      spawnFloatingHearts(5);
+      consecutiveDone = 0;
+      return;
+    }
+  }
+
+  // ===== CAT INTERACTION =====
+  canvas.addEventListener('mousedown', e=>{isDragging=true; lastMouseX=e.clientX; bounceV=-3;});
+  window.addEventListener('mouseup', ()=>{isDragging=false;});
+  window.addEventListener('mousemove', e=>{
+    if(!isDragging) return;
+    const dx = e.clientX - lastMouseX;
+    catRotTarget += dx * 0.04;
+    lastMouseX = e.clientX;
+  });
+
+  canvas.addEventListener('click', ()=>{
+    updateActivity();
+    bounceV = -6; // gentler bounce
+    catScaleTarget = 1.1;
+    petT = 60; // 1 second of happy expression!
+    setTimeout(() => catScaleTarget = 1, 200);
+    if(moodPct > 50){
+      spawnParticles(8, '#c084fc');
+      spawnFloatingHearts(3);
+    }
+    playSynthSound('meow');
+    addChatBubble('bot', catChirp());
+  });
+
+  canvas.addEventListener('dblclick', ()=>{
+    updateActivity();
+    catScaleTarget = 1.2;
+    bounceV = -10; // reduced from -15 to prevent flying off
+    petT = 120; // 2 seconds of super happy expression!
+    spawnParticles(15, '#f0abfc');
+    spawnFloatingHearts(5);
+    playSynthSound('meow');
+    // Sweet delayed double chirp
+    setTimeout(() => playSynthSound('meow'), 120);
+    addChatBubble('bot', '*super excited zoomies* NYAA~! You found the secret double-tap! ✨');
+    setTimeout(() => catScaleTarget = 1, 400);
+  });
+
+  function catChirp(){
+    const ms = [
+      'Meow! *purrs happily*',
+      'Prrrr~ pet me more! 🐾',
+      'Mrrrow! You are the best!',
+      '*head bonks screen affectionately*',
+      'Nya~ let us be productive together!',
+      '*slow blink* I trust you, hooman!',
+      '*kneads paws* Comfy~',
+      'Mew! *does tiny spin*'
+    ];
+    return ms[Math.floor(Math.random()*ms.length)];
+  }
+
+  function spawnParticles(n, col){
+    for(let i=0;i<n;i++){
+      particles.push({
+        x: W/2+20, y: H/2-10,
+        vx: (Math.random()-0.5)*6,
+        vy: -Math.random()*5-2,
+        life: 1,
+        col,
+        size: Math.random()*4+2,
+        rot: Math.random()*Math.PI*2,
+        rotSpeed: (Math.random()-0.5)*0.2
+      });
+    }
+  }
+
+  function spawnFloatingHearts(n){
+    for(let i=0;i<n;i++){
+      floatingHearts.push({
+        x: W/2 + (Math.random()-0.5)*40,
+        y: H/2 - 20,
+        vy: -1 - Math.random()*2,
+        vx: (Math.random()-0.5)*1,
+        life: 1,
+        size: Math.random()*8+8
+      });
+    }
+  }
+
+  function spawnStars(n){
+    for(let i=0;i<n;i++){
+      stars.push({
+        x: Math.random()*W,
+        y: Math.random()*H,
+        life: Math.random()*0.5+0.5,
+        size: Math.random()*2+1,
+        twinkle: Math.random()*Math.PI*2
+      });
+    }
+  }
+
+  function spawnTear(){
+    sadTears.push({x: W/2+Math.random()*20-10+20, y: H/2+10, vy: 1.5+Math.random(), life: 1});
+  }
+
+  function spawnZzz() {
+    if (zzzs.length < 3 && Math.random() < 0.02) {
+      zzzs.push({
+        x: W/2 + 25,
+        y: H/2 - 40,
+        vy: -0.6 - Math.random()*0.5,
+        vx: (Math.random() - 0.5) * 0.4,
+        size: 8 + Math.random()*6,
+        life: 1,
+        text: 'Z' + ('z'.repeat(Math.floor(Math.random()*2)))
+      });
+    }
+  }
+
+  function triggerConfetti() {
+    const container = document.getElementById('app');
+    const colors = ['#f472b6', '#a78bfa', '#38bdf8', '#fbbf24', '#34d399', '#f43f5e'];
+    for (let i = 0; i < 40; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'html-confetti';
+      
+      const size = Math.random() * 8 + 6;
+      confetti.style.width = size + 'px';
+      confetti.style.height = (Math.random() * 4 + size) + 'px';
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.left = (Math.random() * 80 + 10) + '%';
+      confetti.style.top = '0px';
+      confetti.style.opacity = Math.random() * 0.7 + 0.3;
+      
+      const duration = Math.random() * 1.5 + 1.5;
+      const delay = Math.random() * 0.3;
+      const angle = Math.random() * 360;
+      
+      confetti.style.transform = `rotate(${angle}deg)`;
+      confetti.style.setProperty('--fall-duration', duration + 's');
+      confetti.style.setProperty('--fall-delay', delay + 's');
+      confetti.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+      
+      container.appendChild(confetti);
+      setTimeout(() => confetti.remove(), (duration + delay) * 1000);
+    }
+  }
+
+  function getMoodState(){
+    if(isSleeping) return 'sleeping';
+    if(petT > 0) return 'happy';
+    const done = tasks.filter(t=>t.done).length, total = tasks.length;
+    const highPending = tasks.filter(t=>!t.done&&t.priority==='high').length;
+    const overdue = tasks.filter(t=>!t.done&&t.deadline&&new Date(t.deadline)<new Date()).length;
+    if(total===0) return 'content';
+    if(overdue>=2) return 'sad';
+    if(highPending>=2) return 'anxious';
+    if(moodPct>=85) return 'happy';
+    if(moodPct>=60) return 'content';
+    if(moodPct>=40) return 'neutral';
+    return 'sad';
+  }
+
+  function getMoodEmoji(mood){
+    const emojis = {happy:'😸', content:'😊', neutral:'😐', sad:'😿', anxious:'😰', sleeping:'😴'};
+    return emojis[mood] || '😊';
+  }
+
+  function getMoodAccessory(mood){
+    const accs = {happy:'✨', content:'🌸', neutral:'💭', sad:'💧', anxious:'⚡', sleeping:'💤'};
+    return accs[mood] || '✨';
+  }
+
+  function drawCat(t){
+    ctx.clearRect(0,0,W,H);
+    const mood = getMoodState();
+    currentMoodState = mood;
+
+    const cx = W/2, cy = H/2 + 20;
+    const rot = catRotY;
+    const by = bounceY;
+    const sc = catScale;
+    const breath = Math.sin(breathing)*2;
+    const headBobAmt = Math.sin(breathing*1.3)*1.5;
+
+    // Update glow
+    const glowEl = document.getElementById('cat-glow');
+    if(glowEl){
+      glowEl.className = 'cat-glow '+mood;
+    }
+
+    // Update accessory
+    const accEl = document.getElementById('cat-accessory');
+    if(accEl){
+      accEl.textContent = getMoodAccessory(mood);
+    }
+
+    ctx.save();
+    ctx.translate(cx, cy+by);
+    ctx.scale(sc, sc);
+
+    const skewX = Math.sin(rot)*0.15;
+
+    // ===== SHADOW =====
+    const shadowScale = 1 - (by / -30) * 0.3;
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(0, 62, 35*shadowScale, 8*shadowScale, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.beginPath();
+    ctx.ellipse(0, 62, 45*shadowScale, 10*shadowScale, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // ===== AURA GLOW =====
+    if(mood==='happy'||mood==='content'){
+      const glowAlpha = 0.08 + Math.sin(t*0.04)*0.04;
+      const glow = ctx.createRadialGradient(0,-10,10,0,-10,70);
+      glow.addColorStop(0, 'rgba(192,132,252,'+glowAlpha+')');
+      glow.addColorStop(0.5, 'rgba(168,85,247,'+(glowAlpha*0.5)+')');
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0,-10,70,0,Math.PI*2);
+      ctx.fill();
+    }
+    if(mood==='anxious'){
+      const glow = ctx.createRadialGradient(0,-10,10,0,-10,60);
+      glow.addColorStop(0, 'rgba(248,113,113,0.06)');
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0,-10,60,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    // ===== TAIL (drawn behind body) =====
+    function drawTail(){
+      ctx.save();
+      ctx.transform(1,0,skewX*0.8,1,0,0);
+      const sw = tailSwing;
+      const tailCurve = Math.sin(t*0.03)*8;
+
+      // Tail shadow
+      ctx.strokeStyle='rgba(0,0,0,0.2)';
+      ctx.lineWidth=8;
+      ctx.lineCap='round';
+      ctx.beginPath();
+      ctx.moveTo(-12,42);
+      ctx.quadraticCurveTo(-45+sw, 65+tailCurve, -35+sw*1.5, 38);
+      ctx.stroke();
+
+      // Tail base
+      ctx.strokeStyle='#6d28d9';
+      ctx.lineWidth=7;
+      ctx.beginPath();
+      ctx.moveTo(-12,42);
+      ctx.quadraticCurveTo(-45+sw, 65+tailCurve, -35+sw*1.5, 38);
+      ctx.stroke();
+
+      // Tail mid
+      ctx.strokeStyle='#7c3aed';
+      ctx.lineWidth=5;
+      ctx.stroke();
+
+      // Tail highlight
+      ctx.strokeStyle='#a855f7';
+      ctx.lineWidth=3;
+      ctx.stroke();
+
+      // Tail tip
+      if(mood==='happy'){
+        ctx.fillStyle='rgba(240,171,252,0.7)';
+        ctx.beginPath();
+        ctx.arc(-35+sw*1.5, 38, 5, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.4)';
+        ctx.beginPath();
+        ctx.arc(-35+sw*1.5, 38, 2, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      // Tail stripes
+      ctx.strokeStyle='rgba(0,0,0,0.15)';
+      ctx.lineWidth=2;
+      for(let i=0; i<3; i++){
+        const tPos = i/3;
+        const tx = -12 + (-35+sw*1.5 - (-12))*tPos;
+        const ty = 42 + (38 - 42)*tPos;
+        ctx.beginPath();
+        ctx.arc(tx, ty, 4, 0, Math.PI*2);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    // ===== BACK LEGS =====
+    function drawBackLegs(){
+      ctx.save();
+      ctx.transform(1,0,skewX,1,0,0);
+      const stride = Math.sin(t*0.05)*2;
+
+      // Left back leg
+      ctx.fillStyle='#5b21b6';
+      ctx.beginPath();
+      ctx.ellipse(-18, 48+stride, 9, 12, 0.15, 0, Math.PI*2);
+      ctx.fill();
+
+      // Right back leg
+      ctx.beginPath();
+      ctx.ellipse(18, 48-stride, 9, 12, -0.15, 0, Math.PI*2);
+      ctx.fill();
+
+      // Back paws
+      ctx.fillStyle='#4c1d95';
+      ctx.beginPath();
+      ctx.ellipse(-18, 55+stride, 8, 6, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(18, 55-stride, 8, 6, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      // Back paw pads
+      ctx.fillStyle='rgba(255,180,220,0.35)';
+      ctx.beginPath();
+      ctx.ellipse(-18, 56+stride, 3, 2, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(18, 56-stride, 3, 2, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // ===== BODY =====
+    function drawBody(){
+      ctx.save();
+      ctx.transform(1, 0, skewX, 1, 0, 0);
+
+      const bodyGrad = ctx.createLinearGradient(-30,-35,30,35);
+      if(mood==='happy'||mood==='content'){
+        bodyGrad.addColorStop(0,'#c084fc');
+        bodyGrad.addColorStop(0.4,'#9b4dca');
+        bodyGrad.addColorStop(0.8,'#7c3aed');
+        bodyGrad.addColorStop(1,'#6d28d9');
+      } else if(mood==='sad'){
+        bodyGrad.addColorStop(0,'#8b7aa8');
+        bodyGrad.addColorStop(0.5,'#5a4a7e');
+        bodyGrad.addColorStop(1,'#3d2d5e');
+      } else if(mood==='anxious'){
+        bodyGrad.addColorStop(0,'#d87ca6');
+        bodyGrad.addColorStop(0.5,'#b0528a');
+        bodyGrad.addColorStop(1,'#8a3d6e');
+      } else {
+        bodyGrad.addColorStop(0,'#a78bfa');
+        bodyGrad.addColorStop(0.5,'#8b5cf6');
+        bodyGrad.addColorStop(1,'#6d28d9');
+      }
+
+      // Main body - more organic shape
+      ctx.fillStyle = bodyGrad;
+      ctx.beginPath();
+      ctx.ellipse(0, 18+breath, 28, 32, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      // Body shading (left)
+      const sideL = ctx.createLinearGradient(-30,0,0,0);
+      sideL.addColorStop(0,'rgba(0,0,0,0.3)');
+      sideL.addColorStop(0.6,'rgba(0,0,0,0.1)');
+      sideL.addColorStop(1,'transparent');
+      ctx.fillStyle = sideL;
+      ctx.beginPath();
+      ctx.ellipse(0,18+breath,28,32,0,0,Math.PI*2);
+      ctx.fill();
+
+      // Body highlight (right)
+      const sideR = ctx.createLinearGradient(0,0,30,0);
+      sideR.addColorStop(0,'transparent');
+      sideR.addColorStop(0.5,'rgba(255,255,255,0.08)');
+      sideR.addColorStop(1,'rgba(255,255,255,0.15)');
+      ctx.fillStyle = sideR;
+      ctx.beginPath();
+      ctx.ellipse(0,18+breath,28,32,0,0,Math.PI*2);
+      ctx.fill();
+
+      // Belly patch (lighter)
+      ctx.fillStyle = 'rgba(220,180,255,0.2)';
+      ctx.beginPath();
+      ctx.ellipse(-6, 10+breath, 16, 18, -0.15, 0, Math.PI*2);
+      ctx.fill();
+
+      // Body stripes (subtle)
+      ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+      ctx.lineWidth = 2;
+      for(let i=-1; i<=1; i++){
+        ctx.beginPath();
+        ctx.moveTo(-18+i*6, -5+breath);
+        ctx.quadraticCurveTo(-12+i*6, 15+breath, -8+i*6, 30+breath);
+        ctx.stroke();
+      }
+
+      // Chest fur detail
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 1;
+      for(let i=0; i<3; i++){
+        ctx.beginPath();
+        ctx.moveTo(-8+i*8, 0+breath);
+        ctx.lineTo(-6+i*8, 8+breath);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    // ===== FRONT LEGS =====
+    function drawFrontLegs(){
+      ctx.save();
+      ctx.transform(1,0,skewX,1,0,0);
+      const stride = Math.sin(t*0.05)*1.5;
+
+      // Left front leg
+      ctx.fillStyle='#6d28d9';
+      ctx.beginPath();
+      ctx.ellipse(-12, 50+stride, 7, 11, 0.1, 0, Math.PI*2);
+      ctx.fill();
+
+      // Right front leg
+      ctx.beginPath();
+      ctx.ellipse(12, 50-stride, 7, 11, -0.1, 0, Math.PI*2);
+      ctx.fill();
+
+      // Front paws
+      ctx.fillStyle='#5b21b6';
+      ctx.beginPath();
+      ctx.ellipse(-12, 56+stride, 7, 5, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(12, 56-stride, 7, 5, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      // Front paw pads (detailed)
+      ctx.fillStyle='rgba(255,180,220,0.4)';
+      // Main pad
+      ctx.beginPath();
+      ctx.ellipse(-12, 57+stride, 3, 2, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(12, 57-stride, 3, 2, 0, 0, Math.PI*2);
+      ctx.fill();
+      // Toe beans
+      ctx.fillStyle='rgba(255,180,220,0.5)';
+      for(let i=-1; i<=1; i++){
+        ctx.beginPath();
+        ctx.arc(-12+i*2.5, 55+stride, 1.2, 0, Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(12+i*2.5, 55-stride, 1.2, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    // ===== HEAD =====
+    function drawHead(){
+      ctx.save();
+      ctx.transform(1,0,skewX*0.6,1,0,0);
+      ctx.translate(0,-45+headBobAmt+breath*0.3);
+
+      const headGrad = ctx.createRadialGradient(-5,-5,3,0,0,26);
+      if(mood==='happy'||mood==='content'){
+        headGrad.addColorStop(0,'#e0aaff');
+        headGrad.addColorStop(0.5,'#c77dff');
+        headGrad.addColorStop(0.8,'#9d4edd');
+        headGrad.addColorStop(1,'#7c3aed');
+      } else if(mood==='sad'){
+        headGrad.addColorStop(0,'#a89bc4');
+        headGrad.addColorStop(0.5,'#7a6a9e');
+        headGrad.addColorStop(1,'#4a3a6e');
+      } else if(mood==='anxious'){
+        headGrad.addColorStop(0,'#e8a0cc');
+        headGrad.addColorStop(0.5,'#c77da8');
+        headGrad.addColorStop(1,'#a34d7a');
+      } else {
+        headGrad.addColorStop(0,'#c4a0f0');
+        headGrad.addColorStop(0.5,'#a78bfa');
+        headGrad.addColorStop(1,'#8b5cf6');
+      }
+
+      // Main head shape - slightly more organic
+      ctx.fillStyle = headGrad;
+      ctx.beginPath();
+      ctx.ellipse(0,0,24,21,0,0,Math.PI*2);
+      ctx.fill();
+
+      // Forehead highlight
+      ctx.fillStyle = 'rgba(255,255,255,0.12)';
+      ctx.beginPath();
+      ctx.ellipse(-6,-8,12,9,-.3,0,Math.PI*2);
+      ctx.fill();
+
+      // Cheek fluff (left)
+      ctx.fillStyle = headGrad;
+      ctx.beginPath();
+      ctx.ellipse(-20,5,6,8,0.3,0,Math.PI*2);
+      ctx.fill();
+      // Cheek fluff (right)
+      ctx.beginPath();
+      ctx.ellipse(20,5,6,8,-0.3,0,Math.PI*2);
+      ctx.fill();
+
+      const ew = earWiggle;
+
+      // LEFT EAR
+      ctx.save();
+      ctx.fillStyle = headGrad;
+      ctx.beginPath();
+      ctx.moveTo(-18+ew,-14);
+      ctx.lineTo(-26+ew,-32);
+      ctx.lineTo(-8,-20);
+      ctx.closePath();
+      ctx.fill();
+      // Inner ear
+      ctx.fillStyle='rgba(255,180,220,0.6)';
+      ctx.beginPath();
+      ctx.moveTo(-17+ew,-15);
+      ctx.lineTo(-23+ew,-28);
+      ctx.lineTo(-10,-19);
+      ctx.closePath();
+      ctx.fill();
+      // Ear highlight
+      ctx.fillStyle='rgba(255,255,255,0.15)';
+      ctx.beginPath();
+      ctx.moveTo(-16+ew,-16);
+      ctx.lineTo(-20+ew,-24);
+      ctx.lineTo(-12,-20);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // RIGHT EAR
+      ctx.save();
+      ctx.fillStyle = headGrad;
+      ctx.beginPath();
+      ctx.moveTo(18-ew,-14);
+      ctx.lineTo(26-ew,-32);
+      ctx.lineTo(8,-20);
+      ctx.closePath();
+      ctx.fill();
+      // Inner ear
+      ctx.fillStyle='rgba(255,180,220,0.6)';
+      ctx.beginPath();
+      ctx.moveTo(17-ew,-15);
+      ctx.lineTo(23-ew,-28);
+      ctx.lineTo(10,-19);
+      ctx.closePath();
+      ctx.fill();
+      // Ear highlight
+      ctx.fillStyle='rgba(255,255,255,0.15)';
+      ctx.beginPath();
+      ctx.moveTo(16-ew,-16);
+      ctx.lineTo(20-ew,-24);
+      ctx.lineTo(12,-20);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      drawFace(mood);
+
+      // WHISKERS (improved)
+      ctx.strokeStyle='rgba(200,160,255,0.6)';
+      ctx.lineWidth=0.9;
+      const wt = whiskerTwitch;
+      for(let i=0;i<3;i++){
+        const yo = i*5-5;
+        // Left whiskers
+        ctx.beginPath();
+        ctx.moveTo(-24+skewX*2,yo+wt);
+        ctx.quadraticCurveTo(-35, yo-2+wt, -42, yo+wt*2);
+        ctx.stroke();
+        // Right whiskers
+        ctx.beginPath();
+        ctx.moveTo(24-skewX*2,yo-wt);
+        ctx.quadraticCurveTo(35, yo-2-wt, 42, yo-wt*2);
+        ctx.stroke();
+      }
+
+      // Chin
+      ctx.fillStyle='rgba(255,200,220,0.3)';
+      ctx.beginPath();
+      ctx.ellipse(0, 14, 8, 4, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      // Accessories based on completion percentage
+      const totalTasks = tasks.length;
+      const doneTasks = tasks.filter(x=>x.done).length;
+      const pctTasks = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+      if (totalTasks > 0 && pctTasks >= 80) {
+        // Glow Crown
+        ctx.save();
+        ctx.translate(0, -22);
+        
+        // Draw crown base
+        ctx.fillStyle = 'rgba(251, 191, 36, 0.95)';
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 1.5;
+        ctx.shadowColor = 'rgba(251, 191, 36, 0.8)';
+        ctx.shadowBlur = 10;
+        
+        ctx.beginPath();
+        ctx.moveTo(-10, 0);
+        ctx.lineTo(-12, -8);
+        ctx.lineTo(-5, -4);
+        ctx.lineTo(0, -12); // peak
+        ctx.lineTo(5, -4);
+        ctx.lineTo(12, -8);
+        ctx.lineTo(10, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        
+        // Jewels
+        ctx.fillStyle = '#ef4444'; // Red gem
+        ctx.beginPath();
+        ctx.arc(0, -12, 1.8, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle = '#3b82f6'; // Blue gem
+        ctx.beginPath();
+        ctx.arc(-12, -8, 1.2, 0, Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(12, -8, 1.2, 0, Math.PI*2);
+        ctx.fill();
+        
+        ctx.restore();
+      } else if (totalTasks > 0 && pctTasks >= 40) {
+        // Wizard Hat
+        ctx.save();
+        ctx.translate(0, -20);
+        ctx.rotate(-0.1);
+        
+        // Hat brim
+        ctx.fillStyle = '#3b0764';
+        ctx.strokeStyle = '#c084fc';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 15, 3.5, 0, 0, Math.PI*2);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Hat cone
+        const hatGrad = ctx.createLinearGradient(0, 0, 0, -18);
+        hatGrad.addColorStop(0, '#581c87');
+        hatGrad.addColorStop(1, '#1e1b4b');
+        ctx.fillStyle = hatGrad;
+        
+        ctx.beginPath();
+        ctx.moveTo(-10, -1);
+        ctx.quadraticCurveTo(0, -2, 10, -1);
+        ctx.lineTo(1, -20);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        
+        // Golden star on hat
+        ctx.fillStyle = '#fbbf24';
+        ctx.shadowColor = '#fbbf24';
+        ctx.shadowBlur = 4;
+        ctx.beginPath();
+        ctx.arc(0, -10, 2, 0, Math.PI*2);
+        ctx.fill();
+        
+        ctx.restore();
+      } else {
+        // Scholar Glasses
+        ctx.save();
+        ctx.translate(0, 2);
+        ctx.strokeStyle = 'rgba(240, 171, 252, 0.85)';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = 'rgba(240, 171, 252, 0.4)';
+        ctx.shadowBlur = 3;
+        
+        // Left lens
+        ctx.beginPath();
+        ctx.arc(-8, 1, 5, 0, Math.PI*2);
+        ctx.stroke();
+        // Right lens
+        ctx.beginPath();
+        ctx.arc(8, 1, 5, 0, Math.PI*2);
+        ctx.stroke();
+        // Bridge
+        ctx.beginPath();
+        ctx.moveTo(-3, 1);
+        ctx.quadraticCurveTo(0, -1, 3, 1);
+        ctx.stroke();
+        
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    // ===== FACE =====
+    function drawFace(mood){
+      const blink = blinkState===1;
+      const eyeW = eyeSize;
+
+      ctx.save();
+      if (isSleeping) {
+        // Sleepy curved closed eyes (uu)
+        ctx.strokeStyle = 'rgba(124, 58, 237, 0.75)';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(-8, 2, 2.5, 0, Math.PI);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(8, 2, 2.5, 0, Math.PI);
+        ctx.stroke();
+        
+        // Peaceful mouth
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(0, 10, 1.5, 0, Math.PI);
+        ctx.stroke();
+        
+        ctx.restore();
+        return;
+      }
+
+      if(mood==='sad'){
+        // Tear-filled eyes with droop
+        ctx.fillStyle='rgba(150,200,255,0.7)';
+        ctx.beginPath();
+        ctx.ellipse(-8,3,4,3.5,0.1,0,Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(8,3,4,3.5,-0.1,0,Math.PI*2);
+        ctx.fill();
+
+        ctx.fillStyle='#1a0a2e';
+        if(!blink){
+          ctx.beginPath();
+          ctx.ellipse(-8,3,2,1.8,0.1,0,Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.ellipse(8,3,2,1.8,-0.1,0,Math.PI*2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle='rgba(150,200,255,0.7)';
+          ctx.fillRect(-11,2,7,1.5);
+          ctx.fillRect(5,2,7,1.5);
+        }
+
+        // Sad eyebrows
+        ctx.strokeStyle='rgba(100,80,140,0.5)';
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(-12,-3);
+        ctx.lineTo(-4,-1);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(12,-3);
+        ctx.lineTo(4,-1);
+        ctx.stroke();
+
+        // Sad mouth
+        ctx.strokeStyle='rgba(255,255,255,0.8)';
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.arc(-10,12,5,0.2,Math.PI-0.2);
+        ctx.stroke();
+
+        // Nose
+        ctx.fillStyle='#c084fc';
+        ctx.beginPath();
+        ctx.moveTo(0,8);
+        ctx.lineTo(-3,11);
+        ctx.lineTo(0,12);
+        ctx.lineTo(3,11);
+        ctx.closePath();
+        ctx.fill();
+
+        // Tear drops
+        ctx.fillStyle='rgba(150,200,255,0.8)';
+        ctx.beginPath();
+        ctx.arc(-12,8,2,0,Math.PI*2);
+        ctx.fill();
+
+      } else if(mood==='anxious'){
+        // Wide worried eyes
+        ctx.fillStyle='rgba(255,200,200,0.8)';
+        ctx.beginPath();
+        ctx.ellipse(-8,2,4.5,4,0,0,Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(8,2,4.5,4,0,0,Math.PI*2);
+        ctx.fill();
+
+        ctx.fillStyle='#1a0a2e';
+        if(!blink){
+          ctx.beginPath();
+          ctx.arc(-8,1,2.5,0,Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(8,1,2.5,0,Math.PI*2);
+          ctx.fill();
+          // Tiny pupils
+          ctx.fillStyle='rgba(255,255,255,0.3)';
+          ctx.beginPath();
+          ctx.arc(-8.5,0.5,0.8,0,Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(7.5,0.5,0.8,0,Math.PI*2);
+          ctx.fill();
+        } else {
+          ctx.fillStyle='rgba(255,200,200,0.8)';
+          ctx.fillRect(-11,1,7,1.5);
+          ctx.fillRect(5,1,7,1.5);
+        }
+
+        // Worried eyebrows
+        ctx.strokeStyle='rgba(200,100,100,0.5)';
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(-12,-4);
+        ctx.lineTo(-4,-2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(12,-4);
+        ctx.lineTo(4,-2);
+        ctx.stroke();
+
+        // Tight mouth
+        ctx.strokeStyle='rgba(255,255,255,0.8)';
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(-4,13);
+        ctx.lineTo(4,13);
+        ctx.stroke();
+
+        // Sweat drops
+        ctx.fillStyle='rgba(150,200,255,0.6)';
+        ctx.beginPath();
+        ctx.arc(-15,-5,2.5,0,Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(15,-5,2,0,Math.PI*2);
+        ctx.fill();
+
+      } else if(mood==='happy'){
+        // Sparkly happy eyes
+        ctx.fillStyle='rgba(240,210,255,0.9)';
+        ctx.beginPath();
+        ctx.ellipse(-8,2,4,4,0,0,Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(8,2,4,4,0,0,Math.PI*2);
+        ctx.fill();
+
+        ctx.fillStyle='#1a0a2e';
+        if(!blink && petT === 0){
+          // Large pupils
+          ctx.beginPath();
+          ctx.arc(-8,2,2.5,0,Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(8,2,2.5,0,Math.PI*2);
+          ctx.fill();
+
+          // Eye shines
+          ctx.fillStyle='rgba(255,255,255,0.95)';
+          ctx.beginPath();
+          ctx.arc(-7,1,1.2,0,Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(9,1,1.2,0,Math.PI*2);
+          ctx.fill();
+
+          // Extra sparkles
+          ctx.fillStyle='rgba(255,255,255,0.8)';
+          ctx.beginPath();
+          ctx.arc(-10,0,0.8,0,Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(6,0,0.8,0,Math.PI*2);
+          ctx.fill();
+        } else {
+          // Happy closed eyes (^)
+          ctx.strokeStyle='#4a1e8a';
+          ctx.lineWidth=2;
+          ctx.beginPath();
+          ctx.moveTo(-11,2);
+          ctx.lineTo(-8,-1);
+          ctx.lineTo(-5,2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(5,2);
+          ctx.lineTo(8,-1);
+          ctx.lineTo(11,2);
+          ctx.stroke();
+        }
+
+        // Happy raised eyebrows
+        ctx.strokeStyle='rgba(255,255,255,0.6)';
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(-12,-5);
+        ctx.quadraticCurveTo(-8,-8,-4,-5);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(4,-5);
+        ctx.quadraticCurveTo(8,-8,12,-5);
+        ctx.stroke();
+
+        // Big smile
+        ctx.strokeStyle='rgba(255,255,255,0.9)';
+        ctx.lineWidth=2;
+        ctx.beginPath();
+        ctx.arc(-10,10,5,Math.PI+0.2,-0.2);
+        ctx.stroke();
+        ctx.fillStyle='rgba(255,180,220,0.3)';
+        ctx.beginPath();
+        ctx.arc(-10,10,5,Math.PI+0.2,-0.2);
+        ctx.lineTo(-10,10);
+        ctx.closePath();
+        ctx.fill();
+
+        // Nose
+        ctx.fillStyle='#ffb5e8';
+        ctx.beginPath();
+        ctx.moveTo(0,7);
+        ctx.lineTo(-3,10);
+        ctx.lineTo(0,11);
+        ctx.lineTo(3,10);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.3)';
+        ctx.beginPath();
+        ctx.arc(-1,8,1,0,Math.PI*2);
+        ctx.fill();
+
+        // Blush
+        ctx.fillStyle='rgba(255,150,200,0.35)';
+        ctx.beginPath();
+        ctx.ellipse(-14,6,5,3,0,0,Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(14,6,5,3,0,0,Math.PI*2);
+        ctx.fill();
+
+      } else {
+        // Normal eyes
+        ctx.fillStyle='rgba(210,190,255,0.85)';
+        ctx.beginPath();
+        ctx.ellipse(-8,2,3.8,3.5,0,0,Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(8,2,3.8,3.5,0,0,Math.PI*2);
+        ctx.fill();
+
+        ctx.fillStyle='#1a0a2e';
+        if(!blink){
+          ctx.beginPath();
+          ctx.arc(-8,2,2,0,Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(8,2,2,0,Math.PI*2);
+          ctx.fill();
+
+          ctx.fillStyle='rgba(255,255,255,0.9)';
+          ctx.beginPath();
+          ctx.arc(-7,1,0.8,0,Math.PI*2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(9,1,0.8,0,Math.PI*2);
+          ctx.fill();
+        } else {
+          ctx.strokeStyle='#4a1e8a';
+          ctx.lineWidth=2;
+          ctx.beginPath();
+          ctx.arc(-8,2,2.5,Math.PI,0);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(8,2,2.5,Math.PI,0);
+          ctx.stroke();
+        }
+
+        // Neutral eyebrows
+        ctx.strokeStyle='rgba(180,160,220,0.4)';
+        ctx.lineWidth=1.2;
+        ctx.beginPath();
+        ctx.moveTo(-12,-4);
+        ctx.lineTo(-4,-3);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(12,-4);
+        ctx.lineTo(4,-3);
+        ctx.stroke();
+
+        // Gentle smile
+        ctx.strokeStyle='rgba(255,255,255,0.8)';
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.arc(-10,11,4,0.2,Math.PI-0.2);
+        ctx.stroke();
+
+        // Nose
+        ctx.fillStyle='#c084fc';
+        ctx.beginPath();
+        ctx.moveTo(0,8);
+        ctx.lineTo(-2.5,11);
+        ctx.lineTo(0,12);
+        ctx.lineTo(2.5,11);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // ===== PURR EFFECTS =====
+    function drawPurr(){
+      if(!purring) return;
+      const alpha = (Math.sin(purrT*0.2)*0.5+0.5)*0.7;
+      ctx.save();
+      ctx.font='bold 11px sans-serif';
+      ctx.fillStyle='rgba(192,132,252,'+alpha+')';
+      ctx.fillText('♪ purr', 28, -40);
+      ctx.fillStyle='rgba(240,171,252,'+(alpha*0.7)+')';
+      ctx.fillText('♪', 40, -45+Math.sin(t*0.1)*4);
+      ctx.fillStyle='rgba(200,160,255,'+(alpha*0.5)+')';
+      ctx.fillText('~', 50, -38+Math.sin(t*0.15)*3);
+      ctx.restore();
+    }
+
+    // ===== DRAW ORDER =====
+    drawTail();
+    drawBackLegs();
+    drawBody();
+    drawFrontLegs();
+    drawHead();
+    drawPurr();
+    ctx.restore();
+
+    // ===== PARTICLES =====
+    particles = particles.filter(p=>p.life>0);
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.life-=0.04; p.rot+=p.rotSpeed;
+      ctx.save();
+      ctx.globalAlpha=p.life;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle=p.col;
+      ctx.beginPath();
+      ctx.moveTo(0, -p.size);
+      ctx.lineTo(p.size*0.6, 0);
+      ctx.lineTo(0, p.size);
+      ctx.lineTo(-p.size*0.6, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    });
+
+    // ===== FLOATING HEARTS =====
+    floatingHearts = floatingHearts.filter(h=>h.life>0);
+    floatingHearts.forEach(h=>{
+      h.y+=h.vy; h.x+=h.vx; h.life-=0.02;
+      ctx.save();
+      ctx.globalAlpha=h.life;
+      ctx.font=h.size+'px sans-serif';
+      ctx.fillStyle='#ff6b9d';
+      ctx.fillText('❤', h.x, h.y);
+      ctx.restore();
+    });
+
+    // ===== BACKGROUND STARS =====
+    stars = stars.filter(s=>s.life>0);
+    stars.forEach(s=>{
+      s.twinkle += 0.05;
+      ctx.save();
+      ctx.globalAlpha = s.life * (0.5 + Math.sin(s.twinkle)*0.5);
+      ctx.fillStyle = '#c084fc';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    });
+    if(stars.length < 6) spawnStars(1);
+
+    // ===== TEARS WHEN SAD =====
+    if(mood==='sad'){
+      sadTears = sadTears.filter(p=>p.life>0);
+      sadTears.forEach(p=>{
+        p.y+=p.vy; p.life-=0.025;
+        ctx.save();
+        ctx.globalAlpha=p.life*0.7;
+        ctx.fillStyle='#93c5fd';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2.5, 0, Math.PI*2);
+        ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,0.5)';
+        ctx.beginPath();
+        ctx.arc(p.x-0.5, p.y-0.5, 1, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    // ===== ZZZ PARTICLES WHEN SLEEPING =====
+    if(isSleeping){
+      zzzs = zzzs.filter(z=>z.life>0);
+      zzzs.forEach(z=>{
+        z.y += z.vy; z.x += z.vx; z.life -= 0.012;
+        ctx.save();
+        ctx.globalAlpha = z.life * 0.8;
+        ctx.font = 'bold ' + z.size + 'px sans-serif';
+        ctx.fillStyle = '#c084fc';
+        ctx.fillText(z.text, z.x, z.y);
+        ctx.restore();
+      });
+    } else {
+      zzzs = [];
+    }
+  }
+
+  let lastT = 0;
+  function animate(ts){
+    const dt = ts-lastT; lastT=ts;
+    catAnim++;
+    if(petT > 0) petT--;
+    
+    // Inactivity check for sleeping state
+    if (Date.now() - lastUserInteractionTime > 15000) {
+      if (!isSleeping) {
+        isSleeping = true;
+        updateBot();
+      }
+    }
+    if (isSleeping) {
+      spawnZzz();
+    }
+
+    tailSwing = Math.sin(catAnim*0.035)*14;
+    earWiggle = Math.sin(catAnim*0.06)*2.5;
+    whiskerTwitch = Math.sin(catAnim*0.1)*0.6;
+    breathing = catAnim*0.025;
+    headTilt = Math.sin(catAnim*0.02)*0.05;
+    accessoryFloat = Math.sin(catAnim*0.03)*3;
+    glowPulse = Math.sin(catAnim*0.04)*0.05;
+
+    blinkT++;
+    if(blinkT>200){blinkState=1;}
+    if(blinkT>206){blinkState=0;blinkT=0;}
+
+    if(currentMoodState==='happy') purring=true;
+    else if(catAnim%140===0) purring=false;
+    if(purring) purrT++;
+
+    // FIXED BOUNCE PHYSICS - prevent cat from flying away
+    bounceV += 0.6; // gentler gravity
+    bounceY += bounceV;
+
+    // Hard floor collision
+    if(bounceY > 0){
+      bounceY = 0;
+      bounceV *= -0.35; // dampened bounce
+      if(Math.abs(bounceV) < 0.5) bounceV = 0; // stop micro-bouncing
+    }
+
+    // Ceiling/ceiling check - prevent going too high
+    if(bounceY < -80){
+      bounceY = -80;
+      bounceV = Math.abs(bounceV) * 0.3; // push down gently
+    }
+
+    catScale += (catScaleTarget - catScale)*0.1;
+    // Clamp scale
+    if(catScale < 0.5) catScale = 0.5;
+    if(catScale > 1.5) catScale = 1.5;
+
+    if(currentMoodState==='sad' && catAnim%50===0) spawnTear();
+
+    catRotY += (catRotTarget - catRotY)*0.08;
+    catRotTarget *= 0.97;
+    // Clamp rotation
+    if(catRotY > 0.8) catRotY = 0.8;
+    if(catRotY < -0.8) catRotY = -0.8;
+
+    if(!isDragging){
+      const idleRot = Math.sin(catAnim*0.007)*0.12;
+      catRotY += (idleRot - catRotY)*0.01;
+    }
+
+    drawCat(catAnim);
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+
+  function calcMood(){
+    if(!tasks.length){moodPct=60;return;}
+    const done = tasks.filter(t=>t.done).length;
+    const highPending = tasks.filter(t=>!t.done&&t.priority==='high').length;
+    const overdue = tasks.filter(t=>!t.done&&t.deadline&&new Date(t.deadline)<new Date()).length;
+    moodPct = Math.max(5, Math.min(100, 
+      (done/tasks.length)*100 - highPending*8 - overdue*12 + 20
+    ));
+  }
+
+  function updateBot(){
+    document.getElementById('mood-fill').style.width = Math.round(moodPct)+'%';
+    document.getElementById('mood-pct').textContent = Math.round(moodPct)+'%';
+    const mood = getMoodState();
+    document.getElementById('cat-mood-emoji').textContent = getMoodEmoji(mood);
+    const done = tasks.filter(t=>t.done).length, total = tasks.length;
+    const highP = tasks.filter(t=>!t.done&&t.priority==='high').length;
+    const overdue = tasks.filter(t=>!t.done&&t.deadline&&new Date(t.deadline)<new Date()).length;
+    let status;
+    if(isSleeping) status = '😴 Mochi is sleeping... (move mouse or press any key to wake her up! 🐾)';
+    else if(!total) status = 'Meow! Ready to help you conquer today! 🐾';
+    else if(overdue>0) status = '😿 '+overdue+' task'+(overdue>1?'s':'')+' overdue! Let us fix that!';
+    else if(highP>0) status = '⚡ '+highP+' urgent task'+(highP>1?'s':'')+' meowing for attention!';
+    else if(done===total) status = '🎉 ALL DONE! You are paw-some! *happy spin*';
+    else status = '✨ '+done+'/'+total+' done. Keep going, I believe in you!';
+    document.getElementById('bot-status').textContent = status;
+    if(done===total && total>0){
+      spawnParticles(12,'#f0abfc');
+      spawnFloatingHearts(5);
+    }
+  }
+
+  function updateStats(){
+    document.getElementById('s-high').textContent = tasks.filter(t=>!t.done&&t.priority==='high').length;
+    document.getElementById('s-med').textContent = tasks.filter(t=>!t.done&&t.priority==='med').length;
+    document.getElementById('s-done').textContent = tasks.filter(t=>t.done).length;
+    updateProductivity();
+  }
+
+  function updateProductivity(){
+    const total = tasks.length;
+    const done = tasks.filter(t=>t.done).length;
+    
+    const scoreEl = document.getElementById('prod-score');
+    if (scoreEl) {
+      scoreEl.textContent = done;
+    }
+    
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    const fillRing = document.getElementById('prod-gauge-fill');
+    if(fillRing){
+      const radius = 40;
+      const circumference = 2 * Math.PI * radius;
+      const offset = circumference - (pct / 100) * circumference;
+      fillRing.style.strokeDashoffset = offset;
+    }
+  }
+
+  function escHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+  function getTimeRemaining(deadline){
+    if(!deadline) return null;
+    const now = new Date();
+    const end = new Date(deadline);
+    const diff = end - now;
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+    if(diff < 0) return {text: 'Overdue!', cls: 'countdown-urgent', overdue: true};
+    if(days === 0) return {text: hours+'h left', cls: hours < 3 ? 'countdown-urgent' : 'countdown-soon', overdue: false};
+    return {text: days+'d '+hours+'h left', cls: days < 2 ? 'countdown-soon' : 'countdown-ok', overdue: false};
+  }
+
+  window.addTask = function(){
+    const inp = document.getElementById('task-input');
+    const text = inp.value.trim();
+    if(!text) return;
+    const priority = selectedPriority;
+    const deadline = document.getElementById('deadline-input').value;
+    tasks.push({
+      id: Date.now(),
+      text: text,
+      priority: priority,
+      done: false,
+      deadline: deadline || null,
+      created: new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+    });
+    inp.value = '';
+    const deadlineInput = document.getElementById('deadline-input');
+    if (deadlineInput) deadlineInput.value = '';
+    
+    // Reset priority to medium
+    selectedPriority = 'med';
+    document.querySelectorAll('.priority-chip').forEach(chip => {
+      chip.classList.remove('active');
+      if (chip.classList.contains('med')) {
+        chip.classList.add('active');
+      }
+    });
+    
+    const commandBar = document.getElementById('command-bar-container');
+    if (commandBar) {
+      commandBar.classList.remove('has-content');
+    }
+    
+    playSynthSound('click');
+    renderTasks(); calcMood(); updateBot(); updateStats();
+    saveData();
+    addChatBubble('bot', '*sniffs task* "'+text+'" added! Meow~ 🐾');
+  };
+
+  window.toggleDone = function(id){
+    const t = tasks.find(x=>x.id===id);
+    if(!t) return;
+    t.done = !t.done;
+    if(t.done){
+      consecutiveDone++;
+      incrementStreak(); // increment streak counter!
+      bounceV = -10;
+      spawnParticles(7,'#c084fc');
+      playSynthSound('success');
+      triggerConfetti();
+      const msgs = [
+        'Purrfect! *does zoomies*',
+        'Meow!! You did it! *head bonks*',
+        '*rolls happily* Task complete!',
+        'Nyaa~ one down! You are amazing!'
+      ];
+      addChatBubble('bot', msgs[Math.floor(Math.random()*msgs.length)]);
+      sendSmartReminder();
+    } else {
+      consecutiveDone = 0;
+      playSynthSound('click');
+      addChatBubble('bot', 'Mew? Unchecked! No worries, you will get it! *pats paw*');
+    }
+    calcMood(); renderTasks(); updateBot(); updateStats();
+    saveData();
+  };
+
+  window.deleteTask = function(id, btn){
+    playSynthSound('click');
+    let card = null;
+    if (btn) {
+      card = btn.closest('.task-card');
+    }
+    if (card) {
+      card.classList.add('deleting');
+      setTimeout(() => {
+        tasks = tasks.filter(x=>x.id!==id);
+        calcMood(); renderTasks(); updateBot(); updateStats();
+        saveData();
+      }, 300);
+    } else {
+      tasks = tasks.filter(x=>x.id!==id);
+      calcMood(); renderTasks(); updateBot(); updateStats();
+      saveData();
+    }
+  };
+
+  window.setFilter = function(f,btn){
+    filter = f;
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    // Position sliding pill
+    const pill = document.getElementById('sliding-pill');
+    if (pill) {
+      pill.style.left = btn.offsetLeft + 'px';
+      pill.style.width = btn.offsetWidth + 'px';
+    }
+    renderTasks();
+  };
+
+  function renderTasks(){
+    const list = document.getElementById('task-list');
+    let vis = tasks;
+    if(filter==='done') vis = tasks.filter(t=>t.done);
+    else if(filter==='high') vis = tasks.filter(t=>!t.done&&t.priority==='high');
+    else if(filter==='med') vis = tasks.filter(t=>!t.done&&t.priority==='med');
+    else if(filter==='low') vis = tasks.filter(t=>!t.done&&t.priority==='low');
+    else if(filter==='overdue') vis = tasks.filter(t=>!t.done&&t.deadline&&new Date(t.deadline)<new Date());
+    else vis = [...tasks.filter(t=>!t.done).sort((a,b)=>({'high':0,'med':1,'low':2}[a.priority]-{'high':0,'med':1,'low':2}[b.priority])),...tasks.filter(t=>t.done)];
+
+    if(!vis.length){
+      const msgs = {done:'No tasks done yet!', overdue:'No overdue tasks! Great job!', all:'All clear! Add a task above.'};
+      list.innerHTML = '<div class="empty-state"><div class="big">'+(filter==='done'?'🐾':'🌟')+'</div>'+(msgs[filter]||msgs.all)+'</div>';
+      return;
+    }
+
+    list.innerHTML = vis.map(t=>{
+      const timeInfo = getTimeRemaining(t.deadline);
+      const deadlineHtml = timeInfo ? '<span class="task-countdown '+timeInfo.cls+'">⏰ '+escHtml(timeInfo.text)+'</span>' : '';
+      const deadlineDate = t.deadline ? '<span class="task-deadline">📅 '+escHtml(new Date(t.deadline).toLocaleDateString())+'</span>' : '';
+
+      return '<div class="task-card p-'+t.priority+(t.done?' done':'')+'">'+
+        '<div class="task-check" onclick="toggleDone('+t.id+')">'+
+          '<span class="check-icon">✓</span>'+
+          '<span class="check-empty"></span>'+
+        '</div>'+
+        '<div class="task-body">'+
+          '<div class="task-text">'+escHtml(t.text)+'</div>'+
+          '<div class="task-meta">'+
+            '<span class="priority-badge pb-'+t.priority+'">'+(t.priority==='high'?'Urgent':t.priority==='med'?'Medium':'Low')+'</span>'+
+            '<span class="task-time">'+t.created+'</span>'+
+            deadlineDate+
+            deadlineHtml+
+          '</div>'+
+        '</div>'+
+        '<button class="task-del" onclick="deleteTask('+t.id+', this)" title="Delete">✕</button>'+
+      '</div>';
+    }).join('');
+  }
+
+  function addChatBubble(who, text){
+    if (who === 'bot') {
+      const statusEl = document.getElementById('bot-status');
+      if (statusEl) {
+        statusEl.innerHTML = text;
+      }
+      showNotif('🐱 Mochi', text);
+    }
+    if(chatHistory.length > 50) chatHistory.shift();
+    chatHistory.push({who, text, time: new Date().toISOString()});
+  }
+
+  function showLoading(){}
+  function removeLoading(){}
+
+  // ===== SMART AI CHAT (NO API NEEDED) =====
+  window.sendChat = async function(){
+    updateActivity();
+    const inp = document.getElementById('chat-in');
+    const msg = inp.value.trim();
+    if(!msg) return;
+    inp.value = '';
+    playSynthSound('click');
+    addChatBubble('user', msg);
+    showLoading();
+
+    await new Promise(r => setTimeout(r, 800));
+    removeLoading();
+
+    const mood = getMoodState();
+    const pending = tasks.filter(t => !t.done);
+    const done = tasks.filter(t => t.done);
+    const lowerMsg = msg.toLowerCase();
+
+    let response = '';
+
+    if(/hi|hello|hey|morning|evening|night|good day/.test(lowerMsg)){
+      const greetings = [
+        '*perks up ears* Meow! Hello there, hooman! 🐾',
+        '*slow blink* Hi! I was just napping... but I am awake now!',
+        'Mrrrow! Welcome back! Ready to be productive?',
+        '*stretches* Hello! I missed you! Let us tackle those tasks!'
+      ];
+      response = greetings[Math.floor(Math.random()*greetings.length)];
+    }
+    else if(/task|work|todo|do|complete|finish/.test(lowerMsg)){
+      if(pending.length === 0){
+        response = '*happy dance* All tasks done! You are incredible! 🎉';
+      } else if(pending.length <= 3){
+        response = 'Almost there! Just '+pending.length+' task'+(pending.length>1?'s':'')+' left! You can do it! 💪';
+      } else {
+        response = 'You have '+pending.length+' tasks waiting! Start with the urgent ones! I believe in you! ⚡';
+      }
+    }
+    else if(/motivate|motivation|inspire|quote|encourage/.test(lowerMsg)){
+      const quote = quotes[Math.floor(Math.random()*quotes.length)];
+      response = '*purrs softly* Here is some motivation: "'+quote+'" 🌟';
+    }
+    else if(/how are you|how is it going|how do you feel/.test(lowerMsg)){
+      const moodResponses = {
+        happy: '*super happy* I am ecstatic! You are doing amazing! 🌟',
+        content: '*purrs* I am feeling good! Things are going well! 😊',
+        neutral: '*blinks* I am okay... could be better, but I am here for you!',
+        sad: '*sad meow* I am a bit worried... we have some overdue tasks...',
+        anxious: '*nervous twitch* I am anxious! Too many urgent tasks! Help! 😰',
+        sleeping: '*yawns* I was sleeping peacefully... but I feel comfy! 😴'
+      };
+      response = moodResponses[mood] || '*meows* I am here and ready to help!';
+    }
+    else if(/deadline|time|when|due|late/.test(lowerMsg)){
+      const overdue = tasks.filter(t => !t.done && t.deadline && new Date(t.deadline) < new Date());
+      if(overdue.length > 0){
+        response = '😿 You have '+overdue.length+' overdue task'+(overdue.length>1?'s':'')+'! Let us tackle them together!';
+      } else {
+        response = '*checks watch* No overdue tasks! You are on track! ⏰';
+      }
+    }
+    else if(/cat|kitty|meow|purr|mew|nya/.test(lowerMsg)){
+      const catResponses = [
+        '*purrs loudly* Meow meow! I love cat talk! 🐱',
+        '*rolls on back* Mrrrow! Tell me more!',
+        '*does happy feet* Nya nya! Cat language is the best!',
+        '*slow blink* That is cat for "I love you"! 💕'
+      ];
+      response = catResponses[Math.floor(Math.random()*catResponses.length)];
+    }
+    else if(/help|what can you do|features|how/.test(lowerMsg)){
+      response = 'I can help you manage tasks, send reminders, give motivation, and keep you company! Try asking me about your tasks or for a quote! 💡';
+    }
+    else if(/joke|funny|laugh|humor/.test(lowerMsg)){
+      const jokes = [
+        'Why did the cat sit on the computer? Because it wanted to keep an eye on the mouse! 😹',
+        'What do you call a cat who loves to bowl? An alley cat! 🎳',
+        'Why do cats always get their way? They are very purr-suasive! 😸',
+        'What is a cat is favorite color? Purr-ple! 💜'
+      ];
+      response = jokes[Math.floor(Math.random()*jokes.length)];
+    }
+    else {
+      const defaults = [
+        '*tilts head* Meow? I am not sure I understand, but I am here for you!',
+        '*paws at screen* That is interesting! Tell me more!',
+        '*yawns* Sorry, I was napping... what were you saying?',
+        '*curious sniff* Hmm, let me think about that... *purrs*',
+        'Mew! I heard you! I may be a cat, but I am listening! 🐾'
+      ];
+      response = defaults[Math.floor(Math.random()*defaults.length)];
+    }
+
+    if(mood === 'happy'){
+      response = '*does happy spin* ' + response;
+    } else if(mood === 'sad'){
+      response = '*sad meow* ' + response;
+    } else if(mood === 'anxious'){
+      response = '*nervous tail twitch* ' + response;
+    }
+
+    playSynthSound('meow');
+    addChatBubble('bot', response);
+  };
+
+  function showNotif(title, body){
+    const n = document.getElementById('notif');
+    document.getElementById('notif-title').textContent = title;
+    document.getElementById('notif-body').textContent = body;
+    n.classList.add('show');
+    setTimeout(() => n.classList.remove('show'), 7000);
+  }
+
+  let reminderDateTime = null;
+
+  window.setReminder = function(){
+    updateActivity();
+    const dtInput = document.getElementById('remind-datetime').value;
+    if(!dtInput){
+      playSynthSound('alert');
+      showNotif('Oops!', 'Please pick a date and time first!');
+      return;
+    }
+    playSynthSound('click');
+    reminderDateTime = new Date(dtInput);
+    reminderTime = String(reminderDateTime.getHours()).padStart(2,'0') + ':' + String(reminderDateTime.getMinutes()).padStart(2,'0');
+    reminderFired = false;
+    updateReminderCountdown();
+
+    const h = reminderDateTime.getHours();
+    const m = String(reminderDateTime.getMinutes()).padStart(2,'0');
+    const h12 = h % 12 || 12;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const dateStr = reminderDateTime.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+
+    showNotif('Meow! Reminder Set!', 'Mochi will alert you on '+dateStr+' at '+h12+':'+m+' '+ampm+'!');
+    addChatBubble('bot', '*sets watch* Mew! I will remind you on '+dateStr+' at '+h12+':'+m+' '+ampm+'. Purr~');
+    saveData();
+  };
+
+  function updateReminderCountdown(){
+    const countdownEl = document.getElementById('reminder-countdown');
+    if(!reminderDateTime || !countdownEl) return;
+
+    const now = new Date();
+    const diff = reminderDateTime - now;
+
+    if(diff <= 0){
+      countdownEl.innerHTML = '<span style="color:var(--warn)">⚠️ Reminder time has passed!</span>';
+      return;
+    }
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+    const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+    const seconds = Math.floor((diff % (1000*60)) / 1000);
+
+    const h = reminderDateTime.getHours();
+    const m = String(reminderDateTime.getMinutes()).padStart(2,'0');
+    const h12 = h % 12 || 12;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const dateStr = reminderDateTime.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+
+    let timeStr = '';
+    if(days > 0) timeStr += days + 'd ';
+    if(hours > 0 || days > 0) timeStr += hours + 'h ';
+    if(minutes > 0 || hours > 0 || days > 0) timeStr += minutes + 'm ';
+    timeStr += seconds + 's';
+
+    countdownEl.innerHTML = '⏳ <span style="color:var(--p5)">'+timeStr+'</span> left until '+dateStr+' '+h12+':'+m+' '+ampm;
+  }
+
+  function updateClock(){
+    const now = new Date();
+    const h24 = now.getHours();
+    const h12 = h24 % 12 || 12;
+    const ampm = h24 >= 12 ? 'PM' : 'AM';
+    const m = String(now.getMinutes()).padStart(2,'0');
+    document.getElementById('clock').textContent = h12+':'+m+' '+ampm;
+
+    // Update date
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const dateStr = days[now.getDay()]+', '+months[now.getMonth()]+' '+now.getDate()+' '+now.getFullYear();
+    document.getElementById('clock-date').textContent = dateStr;
+
+    // Update reminder countdown every second
+    updateReminderCountdown();
+
+    // Check reminder - compare full datetime
+    if(reminderDateTime && !reminderFired){
+      const now2 = new Date();
+      const diff = reminderDateTime - now2;
+      if(diff <= 0 && diff > -60000){
+        reminderFired = true;
+        playSynthSound('alert');
+        const pending = tasks.filter(t => !t.done);
+        if(pending.length > 0){
+          const names = pending.slice(0,3).map(t => t.text).join(', ')+(pending.length>3?'...':'');
+          showNotif('Meow! Reminder time!', pending.length+' tasks still pending: '+names);
+          addChatBubble('bot', '*sad meow* '+pending.length+' tasks still left! Mew~');
+        } else {
+          showNotif('Purrrr~ All Done!', 'You finished everything! Mochi is SO happy!');
+          addChatBubble('bot', '*does happy zoomies* PURRRR~ ALL DONE! You are the best hooman!');
+          bounceV = -12;
+          spawnParticles(12,'#f0abfc');
+        }
+        setTimeout(() => { reminderFired = false; }, 60000);
+      }
+    }
+
+    if(now.getMinutes() === 0){
+      sendSmartReminder();
+    }
+  }
+
+  // ===== INITIALIZATION =====
+  const taskInpEl = document.getElementById('task-input');
+  if (taskInpEl) {
+    taskInpEl.addEventListener('keydown', e => {
+      if(e.key === 'Enter') addTask();
+    });
+  }
+
+  // Handle Spotlight console container expand/collapse states
+  const commandBar = document.getElementById('command-bar-container');
+  if (taskInpEl && commandBar) {
+    taskInpEl.addEventListener('input', () => {
+      if (taskInpEl.value.trim().length > 0) {
+        commandBar.classList.add('has-content');
+      } else {
+        commandBar.classList.remove('has-content');
+      }
+    });
+  }
+
+  // Card mouse-coordinate 3D tilt calculation
+  const taskListContainer = document.getElementById('task-list');
+  if (taskListContainer) {
+    taskListContainer.addEventListener('mousemove', e => {
+      const card = e.target.closest('.task-card');
+      if (!card || card.classList.contains('done')) return;
+      
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const rx = -(y - rect.height / 2) / (rect.height / 2) * 8; // max 8 deg
+      const ry = (x - rect.width / 2) / (rect.width / 2) * 8;   // max 8 deg
+      
+      card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+    });
+    
+    taskListContainer.addEventListener('mouseleave', e => {
+      const cards = taskListContainer.querySelectorAll('.task-card');
+      cards.forEach(c => {
+        c.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+      });
+    }, true);
+    
+    taskListContainer.addEventListener('mouseout', e => {
+      const card = e.target.closest('.task-card');
+      if (card && !card.contains(e.relatedTarget)) {
+        card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+      }
+    });
+  }
+
+  // Sliding filter pill positioning
+  window.addEventListener('resize', () => {
+    const activeBtn = document.querySelector('.filter-btn.active');
+    const pill = document.getElementById('sliding-pill');
+    if (activeBtn && pill) {
+      pill.style.left = activeBtn.offsetLeft + 'px';
+      pill.style.width = activeBtn.offsetWidth + 'px';
+    }
+  });
+
+  // Initial pill positioning
+  setTimeout(() => {
+    const activeBtn = document.querySelector('.filter-btn.active');
+    const pill = document.getElementById('sliding-pill');
+    if (activeBtn && pill) {
+      pill.style.left = activeBtn.offsetLeft + 'px';
+      pill.style.width = activeBtn.offsetWidth + 'px';
+    }
+  }, 200);
+
+  setInterval(updateClock, 1000);
+  updateClock();
+  renderTasks();
+  checkAndUpdateStreakLoad();
+  updateGreeting();
+  calcMood();
+  updateBot();
+  updateStats();
+
+  if(chatHistory.length > 0){
+    const lastMsg = chatHistory[chatHistory.length - 1];
+    if (lastMsg && lastMsg.who === 'bot') {
+      const statusEl = document.getElementById('bot-status');
+      if (statusEl) statusEl.innerHTML = lastMsg.text;
+    }
+  } else {
+    addChatBubble('bot', '*stretches and yawns* Meow! I am Mochi! Click me, double-click for surprise, or drag to spin! Purr! 🐾');
+  }
+
+  setTimeout(() => {
+    const tod = getTimeOfDay();
+    const msg = timeBasedMessages[tod][Math.floor(Math.random()*timeBasedMessages[tod].length)];
+    addChatBubble('bot', msg);
+  }, 2000);
+
+})();
+</script>
+</body>
+</html>
